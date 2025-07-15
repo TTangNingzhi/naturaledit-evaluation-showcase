@@ -1,69 +1,45 @@
-# React + TypeScript + Vite
+# NaturalEdit Result Viewer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple web-based viewer for technical evaluation results of NaturalEdit on two datasets, supporting two prompting strategies: **Direct Instruction Prompting** and **Summary-Mediated Prompting**.
 
-Currently, two official plugins are available:
+**Deployed at:** [https://naturaledit-result-viewer.netlify.app/](https://naturaledit-result-viewer.netlify.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Contact:** Ningzhi Tang (ntang@nd.edu, ningzhitang2001@gmail.com)
 
-## Expanding the ESLint configuration
+## Purpose
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+This tool is designed to:
+1. **Inspire user study task selection**: Help researchers identify suitable tasks for user studies by browsing real evaluation cases.
+2. **Enable qualitative analysis**: Facilitate in-depth, qualitative inspection of technical evaluation results for different prompts and models.
+3. **Support readers and collaborators**: Provide an accessible way for readers and team members to explore and understand evaluation outcomes.
+4. **Iterate and refine prompts**: Make it easy to review and adjust prompt designs for NaturalEdit based on observed results.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- **Dataset/Model/Prompt Type Selection**: Switch between datasets (e.g., CanItEdit, EditEval), models (e.g., gpt-4o, gpt-3.5-turbo), and prompt types (e.g., lazy, descriptive, instruction) using dropdowns.
+- **Result Comparison**: View and compare the outcomes of Direct Instruction Prompting and Summary-Mediated Prompting for each test case.
+- **Error Inspection**: See error messages for failed cases.
+- **Prompt & Summary Display**: Inspect the exact prompt and summary used for each evaluation.
+- **Code Diff Visualization**: Compare buggy code, ground truth, and model outputs side-by-side with syntax highlighting and diff blocks.
+- **Easy Navigation**: Browse through all evaluation samples with intuitive navigation controls.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Getting Started
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+2. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+3. **Open the app:**  
+   Visit the local URL shown in your terminal (typically http://localhost:5173).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Data
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Evaluation results are stored as `.jsonl` files in `public/data/`, named by dataset, model, and prompt type (e.g., `CanItEdit_gpt-4o_lazy.jsonl`). The viewer loads and displays these files dynamically.
+
+---
+
+For further customization or extension, please refer to `src/App.tsx` and related component implementations.
