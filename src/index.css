@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+/* Stylized app title for the top bar */
+.app-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.ne-highlight {
+  font-family: 'Orbitron', Arial, sans-serif;
+}
+
+.ne-blue {
+  color: #2563eb; /* Tailwind blue-600 */
+}
+
+.ne-yellow {
+  color: #ca8a04; /* Tailwind yellow-600, deeper yellow */
+}
+
+/* Hide number input spinners for .no-spinner class */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-spinner[type="number"] {
+  -moz-appearance: textfield;
+}
