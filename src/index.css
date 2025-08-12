@@ -8,15 +8,19 @@
 }
 
 .ne-highlight {
-  font-family: 'Orbitron', Arial, sans-serif;
+  font-family: "Orbitron", Arial, sans-serif;
 }
 
 .ne-blue {
-  color: #2563eb; /* Tailwind blue-600 */
+  color: #1c4f8f;
 }
 
 .ne-yellow {
-  color: #ca8a04; /* Tailwind yellow-600, deeper yellow */
+  color: #d39f10;
+}
+
+.ne-gray {
+  color: #888888;
 }
 
 /* Hide number input spinners for .no-spinner class */

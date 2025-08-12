@@ -9,8 +9,8 @@ type NavigationProps = {
     onNavigate?: (index: number) => void;
 };
 
+// Navigation bar with icon buttons for previous/next and manual navigation input
 const Navigation: React.FC<NavigationProps> = ({ current, total, onPrev, onNext, onNavigate }) => (
-    // Navigation bar with icon buttons for previous/next and manual navigation input
     <div className="flex items-center gap-2 navigation-bar">
         <button
             className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 text-gray-700 shadow transition hover:bg-gray-200 active:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
