@@ -174,25 +174,25 @@ const App: React.FC = () => {
                             <SectionHeader icon="🧪">Test Case Result</SectionHeader>
                             <div className="text-xs text-gray-800">
                                 <div className="font-mono font-semibold mb-1">Direct Instruction</div>
-                                <div className="mb-2 pl-2">
-                                    <span className={sample.result_direct === "PASS" ? "text-green-600" : "text-red-600"}>
+                                <div className="mb-2 pl-2 flex items-center">
+                                    <span className={sample.result_direct === "PASS" ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
                                         {sample.result_direct}
                                     </span>
                                     {sample.error_direct && (
-                                        <div className="mt-1 text-red-500 text-xs whitespace-pre-line">
+                                        <span className="ml-2 text-red-400 text-xs whitespace-pre-line">
                                             {sample.error_direct}
-                                        </div>
+                                        </span>
                                     )}
                                 </div>
                                 <div className="font-mono font-semibold mb-1">Summary Mediation</div>
                                 {(["low_unstructured", "low_structured", "medium_unstructured", "medium_structured", "high_unstructured", "high_structured"] as (keyof typeof sample.result_summary)[]).map((field) => (
                                     <div key={field} className="mb-1 pl-2">
                                         <span className="font-mono">{field.replace("_", " ")}: </span>
-                                        <span className={sample.result_summary[field] === "PASS" ? "text-green-600" : "text-red-600"}>
+                                        <span className={sample.result_summary[field] === "PASS" ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
                                             {sample.result_summary[field]}
                                         </span>
                                         {sample.error_summary[field] && (
-                                            <span className="ml-2 text-red-500 text-xs whitespace-pre-line">
+                                            <span className="ml-2 text-red-400 text-xs whitespace-pre-line">
                                                 {sample.error_summary[field]}
                                             </span>
                                         )}
