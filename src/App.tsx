@@ -19,8 +19,8 @@ const App: React.FC = () => {
     // Model selection
     const [model, setModel] = useState("gpt-4.1");
     // Summary controls
-    const [granularity, setGranularity] = useState<"low" | "medium" | "high">("low");
-    const [structure, setStructure] = useState<"structured" | "unstructured">("unstructured");
+    const [granularity, setGranularity] = useState<"low" | "medium" | "high">("medium");
+    const [structure, setStructure] = useState<"structured" | "unstructured">("structured");
 
     // Returns the correct file name based on dataset, model, and type (type only for CanItEdit)
     function getFileName(dataset: string, model: string, type: string) {
