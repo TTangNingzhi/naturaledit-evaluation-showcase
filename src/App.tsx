@@ -172,9 +172,9 @@ const App: React.FC = () => {
                         {/* Test case results for all six summary levels */}
                         <div className="bg-gray-50 border border-gray-200 rounded p-3 flex-1 items-start">
                             <SectionHeader icon="🧪">Test Case Result</SectionHeader>
-                            <div className="text-xs text-gray-800">
-                                <div className="font-mono font-semibold mb-1">Direct Instruction</div>
-                                <div className="mb-2 pl-2 flex items-center">
+                            <div className="text-xs text-gray-800 font-mono">
+                                <div className="font-semibold mb-1">Direct Instruction</div>
+                                <div className="mb-2 pl-2">
                                     <span className={sample.result_direct === "PASS" ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
                                         {sample.result_direct}
                                     </span>
@@ -184,10 +184,10 @@ const App: React.FC = () => {
                                         </span>
                                     )}
                                 </div>
-                                <div className="font-mono font-semibold mb-1">Summary Mediation</div>
+                                <div className="font-semibold mb-1">Summary Mediation</div>
                                 {(["low_unstructured", "low_structured", "medium_unstructured", "medium_structured", "high_unstructured", "high_structured"] as (keyof typeof sample.result_summary)[]).map((field) => (
                                     <div key={field} className="mb-1 pl-2">
-                                        <span className="font-mono">{field.replace("_", " ")}: </span>
+                                        <span>{field.replace("_", " ")}: </span>
                                         <span className={sample.result_summary[field] === "PASS" ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
                                             {sample.result_summary[field]}
                                         </span>
