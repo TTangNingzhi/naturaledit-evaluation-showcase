@@ -9,6 +9,7 @@ A simple web-based viewer for technical evaluation results of NaturalEdit on two
 ## Purpose
 
 This tool is designed to:
+
 1. **Inspire user study task selection**: Help researchers identify suitable tasks for user studies by browsing real evaluation cases.
 2. **Enable qualitative analysis**: Facilitate in-depth, qualitative inspection of technical evaluation results for different prompts and models.
 3. **Support readers and collaborators**: Provide an accessible way for readers and team members to explore and understand evaluation outcomes.
@@ -43,3 +44,9 @@ Evaluation results are stored as `.jsonl` files in `public/data/`, named by data
 ---
 
 For further customization or extension, please refer to `src/App.tsx` and related component implementations.
+
+```
+NaturalEdit Evaluation Showcase
+- Benchmark Results
+- Expert Ratings
+```
