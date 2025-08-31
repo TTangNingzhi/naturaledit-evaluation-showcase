@@ -73,11 +73,11 @@ const ExpertRatings: React.FC = () => {
     const codeContext = useMemo(() => {
         if (!task) return { code: "", other: "" };
         if (mode === "diff") {
-            return { code: task.old.context, other: task.new.context };
+            return { code: task.old.code, other: task.new.code };
         }
         return mode === "original"
-            ? { code: task.old.context, other: task.new.context }
-            : { code: task.new.context, other: task.old.context };
+            ? { code: task.old.code, other: task.new.code }
+            : { code: task.new.code, other: task.old.code };
     }, [task, mode]);
 
     const detectLanguage = useMemo(() => {
@@ -112,11 +112,6 @@ const ExpertRatings: React.FC = () => {
                     <div className="mb-2 flex flex-row items-end justify-between w-full gap-4">
                         <div className="flex items-end gap-3">
                             <span className="text-2xl font-semibold text-gray-600">⭐ Expert Ratings</span>
-                            {headerInfo && (
-                                <span className="text-sm text-gray-500 font-mono">
-                                    {headerInfo.id} • {headerInfo.filename}
-                                </span>
-                            )}
                         </div>
                     </div>
 
@@ -239,17 +234,25 @@ const ExpertRatings: React.FC = () => {
                             {mode === "diff" ? (
                                 <CodeDiffBlock
                                     title="Code Diff"
-                                    oldValue={task.old.context}
-                                    newValue={task.new.context}
+                                    oldValue={task.old.code}
+                                    newValue={task.new.code}
                                     language={detectLanguage}
+                                    filename={headerInfo?.filename}
                                 />
                             ) : (
                                 <div className="bg-white rounded border border-gray-200 p-3">
-                                    <SectionHeader>
-                                        {mode === "original"
-                                            ? "Code (BuggyCode)"
-                                            : "Code (GroundTruth)"}
-                                    </SectionHeader>
+                                    <div className="flex items-start justify-between mb-2">
+                                        <SectionHeader>
+                                            {mode === "original"
+                                                ? "Code (BuggyCode)"
+                                                : "Code (GroundTruth)"}
+                                        </SectionHeader>
+                                        {headerInfo && (
+                                            <span className="text-sm text-gray-500 font-mono">
+                                                {headerInfo.filename}
+                                            </span>
+                                        )}
+                                    </div>
                                     {mappingsDict && (
                                         <CodeWithMapping
                                             code={codeContext.code}

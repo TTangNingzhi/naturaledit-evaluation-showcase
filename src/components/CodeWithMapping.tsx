@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import Prism from "prismjs";
+import DiffMatchPatch from "diff-match-patch";
 import "prismjs/components/prism-python";
 import "prismjs/components/prism-javascript";
 import "prismjs/themes/prism.css";
@@ -15,7 +16,7 @@ type CodeWithMappingProps = {
 
 type Region = { start: number; end: number; mappingIndex: number };
 
-// Simple non-overlapping region builder for code segments
+// Enhanced non-overlapping region builder for code segments with line-priority and fuzzy fallbacks
 function buildCodeRegions(
     code: string,
     mappingArr: SummaryCodeMapping[]
@@ -26,30 +27,127 @@ function buildCodeRegions(
     const overlaps = (a: number, b: number) =>
         used.some(([uA, uB]) => !(b <= uA || a >= uB));
 
+    function tryMark(pos: number, len: number, mappingIndex: number): boolean {
+        if (pos < 0 || len <= 0 || pos + len > code.length) return false;
+        if (overlaps(pos, pos + len)) return false;
+        regions.push({ start: pos, end: pos + len, mappingIndex });
+        used.push([pos, pos + len]);
+        return true;
+    }
+
+    const BITAP_LIMIT = 64;
+    const MIN_MATCH_SCORE = 0.85;
+
     for (let i = 0; i < mappingArr.length; i++) {
         const m = mappingArr[i];
         if (!m || !m.codeSegments || m.codeSegments.length === 0) continue;
 
         for (const seg of m.codeSegments) {
-            const snippet = seg?.code || "";
-            if (!snippet) continue;
+            const raw = seg?.code || "";
+            const snippet = raw;
+            const trimmed = snippet.trim();
+            if (!trimmed) continue;
 
-            // Try to find a non-overlapping occurrence in the code
-            let from = 0;
-            let found = -1;
-            while (from <= code.length) {
-                found = code.indexOf(snippet, from);
-                if (found === -1) break;
-                const end = found + snippet.length;
-                if (!overlaps(found, end)) {
-                    regions.push({ start: found, end, mappingIndex: i });
-                    used.push([found, end]);
-                    break;
+            let matched = false;
+
+            // 1) Try to match by line number if provided
+            if (!matched && typeof seg?.line === "number" && seg.line > 0) {
+                const lines = code.split("\n");
+                const idx = seg.line - 1;
+                if (idx >= 0 && idx < lines.length) {
+                    const lineText = lines[idx];
+                    let foundInLine = lineText.indexOf(snippet);
+                    if (foundInLine === -1 && trimmed.length > 0) {
+                        foundInLine = lineText.indexOf(trimmed);
+                    }
+                    if (foundInLine !== -1) {
+                        let globalPos = 0;
+                        for (let l = 0; l < idx; l++) {
+                            globalPos += lines[l].length + 1; // include newline
+                        }
+                        globalPos += foundInLine;
+                        matched = tryMark(globalPos, snippet.length, i);
+                    }
                 }
-                from = found + 1;
             }
+
+            // 2) Exact occurrences (non-overlapping)
+            if (!matched) {
+                let from = 0;
+                let found = -1;
+                while (from <= code.length) {
+                    found = code.indexOf(snippet, from);
+                    if (found === -1) break;
+                    if (tryMark(found, snippet.length, i)) {
+                        matched = true;
+                        break;
+                    }
+                    from = found + 1;
+                }
+            }
+
+            // 3) Trimmed exact occurrences
+            if (!matched && trimmed !== snippet) {
+                let from = 0;
+                let found = -1;
+                while (from <= code.length) {
+                    found = code.indexOf(trimmed, from);
+                    if (found === -1) break;
+                    if (tryMark(found, trimmed.length, i)) {
+                        matched = true;
+                        break;
+                    }
+                    from = found + 1;
+                }
+            }
+
+            // 4) Bitap/fuzzy match for short snippets
+            if (!matched && trimmed.length > 0 && trimmed.length <= BITAP_LIMIT) {
+                try {
+                    const dmp = new DiffMatchPatch();
+                    const pos = dmp.match_main(code, trimmed, 0);
+                    if (pos !== -1) {
+                        matched = tryMark(pos, trimmed.length, i);
+                    }
+                } catch {
+                    // ignore bitap errors
+                }
+            }
+
+            // 5) Sliding-window fuzzy match for long snippets
+            if (!matched && trimmed.length > BITAP_LIMIT) {
+                try {
+                    const window = BITAP_LIMIT;
+                    const dmp = new DiffMatchPatch();
+                    let bestScore = 0;
+                    let bestPos = -1;
+                    for (let p = 0; p <= Math.max(0, code.length - window); p++) {
+                        const win = code.substr(p, window);
+                        const targetSlice = trimmed.substr(0, window);
+                        const diffs = dmp.diff_main(win, targetSlice);
+                        dmp.diff_cleanupSemantic(diffs);
+                        let editDistance = 0;
+                        for (const d of diffs as [number, string][]) {
+                            if (d[0] !== 0) editDistance += d[1].length;
+                        }
+                        const score = (window - editDistance) / window;
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestPos = p;
+                        }
+                    }
+                    if (bestScore >= MIN_MATCH_SCORE && bestPos !== -1) {
+                        matched = tryMark(bestPos, Math.min(trimmed.length, code.length - bestPos), i);
+                    }
+                } catch {
+                    // ignore errors
+                }
+            }
+
+            // If not matched, continue to next segment (we still want to show original snippet in summary)
         }
     }
+
     // Sort by start
     regions.sort((a, b) => a.start - b.start);
     return regions;
@@ -69,14 +167,19 @@ const CodeWithMapping: React.FC<CodeWithMappingProps> = ({
 }) => {
     const mappingArr = mappings?.[summaryKey] || [];
 
-    const regions = useMemo(
+    const allRegions = useMemo(
         () => buildCodeRegions(code, mappingArr),
         [code, mappingArr]
     );
 
+    const regions = useMemo(() => {
+        if (activeMappingIndex === null) return [];
+        return allRegions.filter(r => r.mappingIndex === activeMappingIndex);
+    }, [allRegions, activeMappingIndex]);
+
     // Create highlighted code segments with mapping overlays
     const renderHighlightedCode = () => {
-        if (regions.length === 0) {
+        if (activeMappingIndex === null || regions.length === 0) {
             // No mappings, just return highlighted code
             const highlightedCode = Prism.highlight(code, Prism.languages[language] as Prism.Grammar, language);
             return <span dangerouslySetInnerHTML={{ __html: highlightedCode }} />;

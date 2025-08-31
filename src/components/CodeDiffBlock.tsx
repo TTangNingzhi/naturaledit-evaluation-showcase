@@ -12,6 +12,7 @@ interface CodeDiffBlockProps {
     oldValue: string;
     newValue: string;
     language?: "python" | "javascript";
+    filename?: string;
 }
 
 const defaultStyles: Record<string, React.CSSProperties> = {
@@ -30,10 +31,18 @@ const CodeDiffBlock: React.FC<CodeDiffBlockProps> = ({
     oldValue,
     newValue,
     language = "python",
+    filename,
 }) => (
     <div className="bg-white rounded shadow p-3 border border-gray-200 flex-1">
         {/* Code diff block for code comparison */}
-        <SectionHeader icon={icon}>{title}</SectionHeader>
+        <div className="flex items-start justify-between mb-2">
+            <SectionHeader icon={icon}>{title}</SectionHeader>
+            {filename && (
+                <span className="text-sm text-gray-500 font-mono">
+                    {filename}
+                </span>
+            )}
+        </div>
         <DiffViewer
             oldValue={oldValue}
             newValue={newValue}
