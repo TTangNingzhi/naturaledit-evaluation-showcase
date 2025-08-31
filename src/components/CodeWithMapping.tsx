@@ -12,6 +12,7 @@ type CodeWithMappingProps = {
     summaryKey: SummaryFieldKey;
     activeMappingIndex: number | null;
     language?: "python" | "javascript";
+    showLineNumbers?: boolean;
 };
 
 type Region = { start: number; end: number; mappingIndex: number };
@@ -164,6 +165,7 @@ const CodeWithMapping: React.FC<CodeWithMappingProps> = ({
     summaryKey,
     activeMappingIndex,
     language = "python",
+    showLineNumbers = true,
 }) => {
     const mappingArr = mappings?.[summaryKey] || [];
 
@@ -243,10 +245,39 @@ const CodeWithMapping: React.FC<CodeWithMappingProps> = ({
         return nodes;
     };
 
+    if (!showLineNumbers) {
+        return (
+            <pre className="whitespace-pre-wrap text-xs text-gray-800 font-mono text-left leading-6 m-0">
+                {renderHighlightedCode()}
+            </pre>
+        );
+    }
+
+    // Split code into lines for line numbering
+    const lines = code.split('\n');
+
     return (
-        <pre className="whitespace-pre-wrap text-xs text-gray-800 font-mono text-left leading-6 m-0">
-            {renderHighlightedCode()}
-        </pre>
+        <div className="flex">
+            {/* Line numbers */}
+            <div className="flex-shrink-0 w-8 bg-gray-50 border-r border-gray-200 select-none">
+                {lines.map((_, index) => (
+                    <div
+                        key={index}
+                        className="text-xs text-gray-500 text-right pr-2 leading-6 h-6"
+                        style={{ lineHeight: '1.5rem' }}
+                    >
+                        {index + 1}
+                    </div>
+                ))}
+            </div>
+
+            {/* Code content */}
+            <div className="flex-1 overflow-x-auto pl-2">
+                <pre className="whitespace-pre-wrap text-xs text-gray-800 font-mono text-left leading-6 m-0">
+                    {renderHighlightedCode()}
+                </pre>
+            </div>
+        </div>
     );
 };
 
