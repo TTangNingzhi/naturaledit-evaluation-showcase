@@ -8,7 +8,7 @@ type SectionHeaderProps = {
 };
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ icon, children }) => (
-    <div className="font-semibold text-base mb-2 text-gray-700 flex items-center gap-2">
+    <div className="font-bold text-base mb-2 text-gray-600 flex items-center">
         {icon} {children}
     </div>
 );
