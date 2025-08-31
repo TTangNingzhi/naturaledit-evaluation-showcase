@@ -18,7 +18,7 @@ const App: React.FC = () => {
             <div className="w-18/20 mx-auto">
                 <div className="mb-2 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <img src="/naturaledit.svg" alt="NaturalEdit Logo" className="h-10 w-10" />
+                        <img src="./naturaledit.svg" alt="NaturalEdit Logo" className="h-10 w-10" />
                         <div>
                             <span className="app-title mr-4">
                                 <span className="ne-highlight ne-yellow">Natural</span>

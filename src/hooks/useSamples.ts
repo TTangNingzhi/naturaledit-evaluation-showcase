@@ -5,9 +5,9 @@ import type { Sample } from "../types";
 
 function getFileName(dataset: string, model: string, type: string) {
     if (dataset === "CanItEdit") {
-        return `/data/${dataset}_${model}_${type}.jsonl`;
+        return `./data/${dataset}_${model}_${type}.jsonl`;
     } else if (dataset === "EditEval") {
-        return `/data/${dataset}_${model}_instruction.jsonl`;
+        return `./data/${dataset}_${model}_instruction.jsonl`;
     }
     return "";
 }
