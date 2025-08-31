@@ -30,7 +30,7 @@ const SummaryWithMapping: React.FC<SummaryWithMappingProps> = ({
     const right = currentText;
 
     return (
-        <div className="text-sm font-mono whitespace-pre-wrap leading-6">
+        <div className="text-xs font-mono whitespace-pre-wrap leading-5">
             {renderDiffedTextWithMapping(
                 left,
                 right,

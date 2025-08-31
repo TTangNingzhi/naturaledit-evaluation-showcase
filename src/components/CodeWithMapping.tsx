@@ -1,4 +1,8 @@
 import React, { useMemo } from "react";
+import Prism from "prismjs";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-javascript";
+import "prismjs/themes/prism.css";
 import type { SummaryCodeMapping, SummaryFieldKey } from "../types";
 
 type CodeWithMappingProps = {
@@ -6,7 +10,7 @@ type CodeWithMappingProps = {
     mappings: Record<SummaryFieldKey, SummaryCodeMapping[]>;
     summaryKey: SummaryFieldKey;
     activeMappingIndex: number | null;
-    setActiveMappingIndex: (idx: number | null) => void;
+    language?: "python" | "javascript";
 };
 
 type Region = { start: number; end: number; mappingIndex: number };
@@ -61,7 +65,7 @@ const CodeWithMapping: React.FC<CodeWithMappingProps> = ({
     mappings,
     summaryKey,
     activeMappingIndex,
-    setActiveMappingIndex,
+    language = "python",
 }) => {
     const mappingArr = mappings?.[summaryKey] || [];
 
@@ -70,47 +74,75 @@ const CodeWithMapping: React.FC<CodeWithMappingProps> = ({
         [code, mappingArr]
     );
 
-    const nodes: React.ReactNode[] = [];
-    let cursor = 0;
-
-    for (let i = 0; i < regions.length; i++) {
-        const r = regions[i];
-        // Plain text before the region
-        if (cursor < r.start) {
-            const plain = code.slice(cursor, r.start);
-            if (plain) nodes.push(<span key={`plain-${cursor}`}>{plain}</span>);
-            cursor = r.start;
+    // Create highlighted code segments with mapping overlays
+    const renderHighlightedCode = () => {
+        if (regions.length === 0) {
+            // No mappings, just return highlighted code
+            const highlightedCode = Prism.highlight(code, Prism.languages[language] as Prism.Grammar, language);
+            return <span dangerouslySetInnerHTML={{ __html: highlightedCode }} />;
         }
-        // Highlighted region
-        const text = code.slice(r.start, r.end);
-        const bg = COLORS[r.mappingIndex % COLORS.length];
-        const style: React.CSSProperties = {
-            backgroundColor: activeMappingIndex === r.mappingIndex ? bg : `${bg}80`,
-            borderRadius: 3,
-            padding: "0 2px",
-            margin: "0 1px",
-            cursor: "pointer",
-        };
-        nodes.push(
-            <span
-                key={`map-${r.mappingIndex}-${r.start}`}
-                style={style}
-                onMouseEnter={() => setActiveMappingIndex(r.mappingIndex)}
-                onMouseLeave={() => setActiveMappingIndex(null)}
-            >
-                {text}
-            </span>
-        );
-        cursor = r.end;
-    }
-    // Remainder
-    if (cursor < code.length) {
-        nodes.push(<span key={`plain-${cursor}`}>{code.slice(cursor)}</span>);
-    }
+
+        const nodes: React.ReactNode[] = [];
+        let cursor = 0;
+
+        for (let i = 0; i < regions.length; i++) {
+            const r = regions[i];
+
+            // Plain text before the region
+            if (cursor < r.start) {
+                const plain = code.slice(cursor, r.start);
+                if (plain) {
+                    const highlightedPlain = Prism.highlight(plain, Prism.languages[language] as Prism.Grammar, language);
+                    nodes.push(
+                        <span
+                            key={`plain-${cursor}`}
+                            dangerouslySetInnerHTML={{ __html: highlightedPlain }}
+                        />
+                    );
+                }
+                cursor = r.start;
+            }
+
+            // Highlighted region with mapping color
+            const text = code.slice(r.start, r.end);
+            const highlightedText = Prism.highlight(text, Prism.languages[language] as Prism.Grammar, language);
+            const bg = COLORS[r.mappingIndex % COLORS.length];
+            const style: React.CSSProperties = {
+                backgroundColor: activeMappingIndex === r.mappingIndex ? bg : `${bg}80`,
+                borderRadius: 3,
+                padding: "0 2px",
+                margin: "0 1px",
+                display: "inline-block",
+            };
+
+            nodes.push(
+                <span
+                    key={`map-${r.mappingIndex}-${r.start}`}
+                    style={style}
+                    dangerouslySetInnerHTML={{ __html: highlightedText }}
+                />
+            );
+            cursor = r.end;
+        }
+
+        // Remainder
+        if (cursor < code.length) {
+            const remainder = code.slice(cursor);
+            const highlightedRemainder = Prism.highlight(remainder, Prism.languages[language] as Prism.Grammar, language);
+            nodes.push(
+                <span
+                    key={`plain-${cursor}`}
+                    dangerouslySetInnerHTML={{ __html: highlightedRemainder }}
+                />
+            );
+        }
+
+        return nodes;
+    };
 
     return (
         <pre className="whitespace-pre-wrap text-xs text-gray-800 font-mono text-left leading-6 m-0">
-            {nodes}
+            {renderHighlightedCode()}
         </pre>
     );
 };

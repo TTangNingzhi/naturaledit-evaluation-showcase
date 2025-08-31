@@ -11,6 +11,7 @@ const SubtaskDots: React.FC<SubtaskDotsProps> = ({ items, currentIndex, onSelect
         <div className="flex items-center gap-2">
             {items.map((item, idx) => {
                 const active = idx === currentIndex;
+                const label = item.id.match(/[A-C]$/)?.[0] ?? item.id;
                 return (
                     <button
                         key={item.id}
@@ -18,10 +19,12 @@ const SubtaskDots: React.FC<SubtaskDotsProps> = ({ items, currentIndex, onSelect
                         title={item.id}
                         onClick={() => onSelect(idx)}
                         className={[
-                            "w-4 h-4 rounded-full transition",
-                            active ? "bg-blue-600 ring-2 ring-blue-300" : "bg-gray-300 hover:bg-gray-400",
+                            "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition",
+                            active ? "bg-blue-600 text-white ring-2 ring-blue-300" : "bg-gray-200 text-gray-700 hover:bg-gray-300",
                         ].join(" ")}
-                    />
+                    >
+                        <span className="select-none pointer-events-none">{label}</span>
+                    </button>
                 );
             })}
         </div>

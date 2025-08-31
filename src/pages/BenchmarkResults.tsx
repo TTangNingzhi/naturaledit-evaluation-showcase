@@ -196,16 +196,19 @@ const BenchmarkResults: React.FC = () => {
                         title="Ground Truth"
                         oldValue={sample.buggy_code}
                         newValue={sample.ground_truth}
+                        language="python"
                     />
                     <CodeDiffBlock
                         title="Output (Direct Instruction)"
                         oldValue={sample.buggy_code}
                         newValue={sample.output_direct}
+                        language="python"
                     />
                     <CodeDiffBlock
                         title="Output (Summary Mediation)"
                         oldValue={sample.buggy_code}
                         newValue={sample.output_summary[`${granularity}_${structure}`] || ""}
+                        language="python"
                     />
                 </div>
             </div>
