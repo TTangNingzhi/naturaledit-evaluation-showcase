@@ -41,8 +41,8 @@ export function useExpertTasks(): UseExpertTasksState {
             setError(undefined);
             try {
                 const [inputRes, outputRes] = await Promise.all([
-                    fetch("/data/tasks-input.json"),
-                    fetch("/data/tasks-output.json"),
+                    fetch("./data/tasks-input.json"),
+                    fetch("./data/tasks-output.json"),
                 ]);
                 const inputJson: TaskInput[] = await inputRes.json();
                 const outputJson: TaskOutput[] = await outputRes.json();
