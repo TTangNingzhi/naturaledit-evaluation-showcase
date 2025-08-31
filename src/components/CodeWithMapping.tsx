@@ -68,7 +68,61 @@ function buildCodeRegions(
                 }
             }
 
-            // 2) Exact occurrences (allow multiple matches for same code)
+            // 2) Handle multi-line code segments by splitting on \n
+            if (!matched && snippet.includes('\n')) {
+                const lines = snippet.split('\n').map(line => line.trim());
+                const codeLines = code.split('\n');
+
+                // Try to find the starting line by matching the first line
+                for (let startLine = 0; startLine <= codeLines.length - lines.length; startLine++) {
+                    let allLinesMatch = true;
+                    let currentPos = 0;
+
+                    // Calculate global position for start line
+                    for (let l = 0; l < startLine; l++) {
+                        currentPos += codeLines[l].length + 1; // include newline
+                    }
+
+                    // Check if all lines match
+                    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+                        const targetLine = lines[lineIdx];
+                        const codeLine = codeLines[startLine + lineIdx];
+
+                        if (!codeLine || codeLine.trim().indexOf(targetLine) === -1) {
+                            allLinesMatch = false;
+                            break;
+                        }
+                    }
+
+                    if (allLinesMatch) {
+                        // Mark each line as a separate region - only the matching part
+                        for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+                            const targetLine = lines[lineIdx];
+                            const codeLine = codeLines[startLine + lineIdx];
+                            const matchStart = codeLine.trim().indexOf(targetLine);
+
+                            if (matchStart !== -1) {
+                                // Calculate the actual start position including leading whitespace
+                                let actualStart = currentPos;
+                                let leadingWhitespace = 0;
+                                while (leadingWhitespace < codeLine.length && /\s/.test(codeLine[leadingWhitespace])) {
+                                    leadingWhitespace++;
+                                }
+                                actualStart += leadingWhitespace + matchStart;
+
+                                tryMark(actualStart, targetLine.length, i);
+                            }
+
+                            // Move to next line position
+                            currentPos += codeLine.length + 1; // +1 for newline
+                        }
+                        matched = true;
+                        break;
+                    }
+                }
+            }
+
+            // 3) Exact occurrences (allow multiple matches for same code)
             if (!matched) {
                 let from = 0;
                 let found = -1;
@@ -84,7 +138,7 @@ function buildCodeRegions(
                 }
             }
 
-            // 3) Trimmed exact occurrences (allow multiple matches)
+            // 4) Trimmed exact occurrences (allow multiple matches)
             if (!matched && trimmed !== snippet) {
                 let from = 0;
                 let found = -1;
@@ -99,7 +153,7 @@ function buildCodeRegions(
                 }
             }
 
-            // 4) Bitap/fuzzy match for short snippets
+            // 5) Bitap/fuzzy match for short snippets
             if (!matched && trimmed.length > 0 && trimmed.length <= BITAP_LIMIT) {
                 try {
                     const dmp = new DiffMatchPatch();
@@ -112,7 +166,7 @@ function buildCodeRegions(
                 }
             }
 
-            // 5) Sliding-window fuzzy match for long snippets
+            // 6) Sliding-window fuzzy match for long snippets
             if (!matched && trimmed.length > BITAP_LIMIT) {
                 try {
                     const window = BITAP_LIMIT;

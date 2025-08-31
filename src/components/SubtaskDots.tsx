@@ -20,7 +20,7 @@ const SubtaskDots: React.FC<SubtaskDotsProps> = ({ items, currentIndex, onSelect
                         onClick={() => onSelect(idx)}
                         className={[
                             "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition",
-                            active ? "bg-blue-600 text-white ring-2 ring-blue-300" : "bg-gray-200 text-gray-700 hover:bg-gray-300",
+                            active ? "bg-gray-600 text-white ring-2 ring-gray-300" : "bg-gray-200 text-gray-700 hover:bg-gray-300",
                         ].join(" ")}
                     >
                         <span className="select-none pointer-events-none">{label}</span>

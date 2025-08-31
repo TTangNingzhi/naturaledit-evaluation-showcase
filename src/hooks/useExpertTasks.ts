@@ -30,7 +30,7 @@ export function useExpertTasks(): UseExpertTasksState {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [granularity, setGranularity] = useState<Granularity>("medium");
+    const [granularity, setGranularity] = useState<Granularity>("high");
     const [structure, setStructure] = useState<StructType>("structured");
 
     // Fetch and merge input/output by id/task_id
@@ -86,7 +86,7 @@ export function useExpertTasks(): UseExpertTasksState {
 
                 if (!cancelled) {
                     setTasks(merged);
-                    setCurrentIndex(5);
+                    setCurrentIndex(3);
                 }
             } catch (e: unknown) {
                 if (!cancelled) {

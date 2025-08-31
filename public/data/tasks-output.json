@@ -270,10 +270,6 @@
             "summaryComponent": "Extracts and returns the segment before the 'T'",
             "codeSegments": [
               {
-                "code": "date.split(\"T\")[0]",
-                "line": 2
-              },
-              {
                 "code": "return date.split(\"T\")[0];",
                 "line": 2
               }
@@ -469,15 +465,6 @@
                 "line": 2
               }
             ]
-          },
-          {
-            "summaryComponent": "No longer splits the string at the 'T' or returns the date portion before the 'T'",
-            "codeSegments": [
-              {
-                "code": "// (No code present for splitting at 'T' or returning date portion before 'T')",
-                "line": 0
-              }
-            ]
           }
         ],
         "high_unstructured": [
@@ -545,10 +532,6 @@
             ]
           },
           {
-            "summaryComponent": "This replaces the previous approach of splitting the string at the 'T' character and extracting the date segment",
-            "codeSegments": []
-          },
-          {
             "summaryComponent": "and is now useful for displaying just the month name from a date-time input.",
             "codeSegments": [
               {
@@ -594,10 +577,6 @@
                 "line": 2
               }
             ]
-          },
-          {
-            "summaryComponent": "No longer splits the string at the 'T' character or extracts the date segment",
-            "codeSegments": []
           },
           {
             "summaryComponent": "Useful for formatting or displaying the month abbreviation from a date-time string",
@@ -2406,6 +2385,10 @@
               {
                 "code": "<LineChart",
                 "line": 1
+              },
+              {
+                "code": "</LineChart>",
+                "line": 15
               }
             ]
           },
@@ -5500,10 +5483,6 @@
             "summaryComponent": "replacing the previous visualization of prediction errors",
             "codeSegments": [
               {
-                "code": "\"\"\"\nDisplay real and predicted ranks side-by-side for comparison.\n",
-                "line": 2
-              },
-              {
                 "code": "plt.title(f\"MVP Ranking Predictions ({year})\")",
                 "line": 34
               }
@@ -5631,15 +5610,6 @@
               {
                 "code": "year_df[\"PredictedRank\"]",
                 "line": 25
-              }
-            ]
-          },
-          {
-            "summaryComponent": "no longer visualizes ranking errors",
-            "codeSegments": [
-              {
-                "code": "# No code for error visualization present",
-                "line": 0
               }
             ]
           },

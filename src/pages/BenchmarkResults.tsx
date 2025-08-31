@@ -111,7 +111,7 @@ const BenchmarkResults: React.FC = () => {
                                     type="checkbox"
                                     checked={structure === "structured"}
                                     onChange={e => setStructure(e.target.checked ? "structured" : "unstructured")}
-                                    className="form-checkbox w-5 h-5"
+                                    className="form-checkbox w-5 h-5 accent-gray-500"
                                 />
                                 Structured
                             </label>

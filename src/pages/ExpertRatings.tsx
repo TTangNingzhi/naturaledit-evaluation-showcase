@@ -57,7 +57,7 @@ const ExpertRatings: React.FC = () => {
         summaryKey,
     } = useExpertTasks();
 
-    const [mode, setMode] = useState<"original" | "diff" | "new">("original");
+    const [mode, setMode] = useState<"original" | "diff" | "new">("new");
     const [activeMappingIndex, setActiveMappingIndex] = useState<number | null>(null);
 
     useEffect(() => setActiveMappingIndex(null), [mode, currentIndex, summaryKey]);
@@ -180,7 +180,7 @@ const ExpertRatings: React.FC = () => {
                                                 type="checkbox"
                                                 checked={structure === "structured"}
                                                 onChange={(e) => setStructure(e.target.checked ? "structured" : "unstructured")}
-                                                className="form-checkbox w-4 h-4"
+                                                className="form-checkbox w-4 h-4 accent-gray-500"
                                             />
                                             Structured
                                         </label>
