@@ -164,7 +164,10 @@ const CodeWithMapping: React.FC<CodeWithMappingProps> = ({
     language = "python",
     showLineNumbers = true,
 }) => {
-    const mappingArr = mappings?.[summaryKey] || [];
+    const mappingArr = useMemo(
+        () => mappings?.[summaryKey] ?? [],
+        [mappings, summaryKey]
+    );
 
     const allRegions = useMemo(
         () => buildCodeRegions(code, mappingArr),
