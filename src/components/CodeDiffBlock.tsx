@@ -55,7 +55,7 @@ const CodeDiffBlock: React.FC<CodeDiffBlockProps> = ({
             renderContent={code =>
                 <pre
                     className="whitespace-pre-wrap text-xs text-gray-800 font-mono text-left"
-                    style={{ display: "block", textAlign: "left", margin: 0, fontSize: "0.75rem" }}
+                    style={{ display: "block", textAlign: "left", margin: 0, fontSize: "0.75rem", lineHeight: "1.25rem" }}
                     dangerouslySetInnerHTML={{
                         __html: Prism.highlight(code, Prism.languages[language] as Prism.Grammar, language),
                     }}

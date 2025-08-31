@@ -165,7 +165,7 @@ const ExpertRatings: React.FC = () => {
                 {!loading && !error && task && (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-white rounded border border-gray-200 p-3">
+                            <div className="bg-white rounded shadow border border-gray-200 p-3">
                                 <div className="flex items-start justify-between mb-2">
                                     <SectionHeader>
                                         {mode === "diff"
@@ -174,19 +174,19 @@ const ExpertRatings: React.FC = () => {
                                                 ? "Summary (BuggyCode)"
                                                 : "Summary (GroundTruth)"}
                                     </SectionHeader>
-                                    <div className="flex items-center gap-4">
-                                        <label className="flex items-center gap-2 text-gray-600 font-mono text-sm select-none">
+                                    <div className="flex items-center gap-3 pt-1">
+                                        <label className="flex items-center gap-1.5 text-gray-600 font-mono text-xs select-none">
                                             <input
                                                 type="checkbox"
                                                 checked={structure === "structured"}
                                                 onChange={(e) => setStructure(e.target.checked ? "structured" : "unstructured")}
-                                                className="form-checkbox w-5 h-5"
+                                                className="form-checkbox w-4 h-4"
                                             />
                                             Structured
                                         </label>
-                                        <span className="opacity-60">|</span>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-gray-600 font-mono text-sm">
+                                        <span className="opacity-60 text-sm">|</span>
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="text-gray-600 font-mono text-xs">
                                                 Granularity ({granularity.charAt(0).toUpperCase() + granularity.slice(1)})
                                             </span>
                                             <input
@@ -200,7 +200,7 @@ const ExpertRatings: React.FC = () => {
                                                         (["low", "medium", "high"][Number(e.target.value)] as Granularity)
                                                     )
                                                 }
-                                                className="w-12 accent-gray-400"
+                                                className="w-10 accent-gray-400"
                                                 aria-label="Granularity"
                                             />
                                         </div>
@@ -240,7 +240,7 @@ const ExpertRatings: React.FC = () => {
                                     filename={headerInfo?.filename}
                                 />
                             ) : (
-                                <div className="bg-white rounded border border-gray-200 p-3">
+                                <div className="bg-white rounded shadow border border-gray-200 p-3">
                                     <div className="flex items-start justify-between mb-2">
                                         <SectionHeader>
                                             {mode === "original"

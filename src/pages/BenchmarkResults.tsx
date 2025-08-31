@@ -135,7 +135,7 @@ const BenchmarkResults: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="col-span-1 md:col-span-1 flex flex-col">
-                        <div className="bg-gray-50 border border-gray-200 rounded p-3 flex-1 items-start">
+                        <div className="bg-gray-50 border border-gray-200 rounded shadow p-3 flex-1 items-start">
                             <SectionHeader>Test Case Result</SectionHeader>
                             <div className="text-xs text-gray-800 font-mono">
                                 <div className="font-semibold mb-1">Direct Instruction</div>
@@ -168,14 +168,14 @@ const BenchmarkResults: React.FC = () => {
                     </div>
 
                     <div className="col-span-1 md:col-span-1 flex flex-col">
-                        <div className="bg-blue-50 border border-blue-100 rounded shadow-sm p-3 flex-1">
+                        <div className="bg-blue-50 border border-blue-100 rounded shadow p-3 flex-1">
                             <SectionHeader>Direct Edit Instruction</SectionHeader>
                             <div className="mt-1 text-xs text-gray-800 whitespace-pre-line text-left font-mono" style={{ textAlign: "left" }}>{sample.instruction}</div>
                         </div>
                     </div>
 
                     <div className="col-span-1 md:col-span-1 flex flex-col">
-                        <div className="bg-yellow-50 border border-yellow-200 rounded shadow-sm p-3 flex-1">
+                        <div className="bg-yellow-50 border border-yellow-200 rounded shadow p-3 flex-1">
                             <SectionHeader>
                                 {`Modified Code Summary (${granularity.charAt(0).toUpperCase() + granularity.slice(1)}, ${structure.charAt(0).toUpperCase() + structure.slice(1)})`}
                             </SectionHeader>

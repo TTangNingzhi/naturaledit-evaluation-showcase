@@ -15,7 +15,7 @@ const App: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 py-8 px-4">
-            <div className="w-17/20 mx-auto">
+            <div className="w-18/20 mx-auto">
                 <div className="mb-2 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <img src="/naturaledit.svg" alt="NaturalEdit Logo" className="h-10 w-10" />

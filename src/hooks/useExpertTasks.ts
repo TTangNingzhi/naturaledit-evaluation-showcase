@@ -86,7 +86,7 @@ export function useExpertTasks(): UseExpertTasksState {
 
                 if (!cancelled) {
                     setTasks(merged);
-                    setCurrentIndex(0);
+                    setCurrentIndex(5);
                 }
             } catch (e: unknown) {
                 if (!cancelled) {

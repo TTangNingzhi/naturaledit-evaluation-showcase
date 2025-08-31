@@ -23,16 +23,12 @@ function buildCodeRegions(
     mappingArr: SummaryCodeMapping[]
 ): Region[] {
     const regions: Region[] = [];
-    const used: Array<[number, number]> = [];
-
-    const overlaps = (a: number, b: number) =>
-        used.some(([uA, uB]) => !(b <= uA || a >= uB));
+    // Remove the used array and overlaps check to allow multiple mappings to share code positions
 
     function tryMark(pos: number, len: number, mappingIndex: number): boolean {
         if (pos < 0 || len <= 0 || pos + len > code.length) return false;
-        if (overlaps(pos, pos + len)) return false;
+        // Allow overlapping regions - multiple mappings can share the same code position
         regions.push({ start: pos, end: pos + len, mappingIndex });
-        used.push([pos, pos + len]);
         return true;
     }
 
@@ -72,7 +68,7 @@ function buildCodeRegions(
                 }
             }
 
-            // 2) Exact occurrences (non-overlapping)
+            // 2) Exact occurrences (allow multiple matches for same code)
             if (!matched) {
                 let from = 0;
                 let found = -1;
@@ -81,13 +77,14 @@ function buildCodeRegions(
                     if (found === -1) break;
                     if (tryMark(found, snippet.length, i)) {
                         matched = true;
-                        break;
+                        // Don't break here - allow finding multiple occurrences
+                        // This enables multiple mappings to reference the same code
                     }
                     from = found + 1;
                 }
             }
 
-            // 3) Trimmed exact occurrences
+            // 3) Trimmed exact occurrences (allow multiple matches)
             if (!matched && trimmed !== snippet) {
                 let from = 0;
                 let found = -1;
@@ -96,7 +93,7 @@ function buildCodeRegions(
                     if (found === -1) break;
                     if (tryMark(found, trimmed.length, i)) {
                         matched = true;
-                        break;
+                        // Don't break here - allow finding multiple occurrences
                     }
                     from = found + 1;
                 }
@@ -213,10 +210,8 @@ const CodeWithMapping: React.FC<CodeWithMappingProps> = ({
             const highlightedText = Prism.highlight(text, Prism.languages[language] as Prism.Grammar, language);
             const bg = COLORS[r.mappingIndex % COLORS.length];
             const style: React.CSSProperties = {
-                backgroundColor: activeMappingIndex === r.mappingIndex ? bg : `${bg}80`,
+                backgroundColor: `${bg}A0`,
                 borderRadius: 3,
-                padding: "0 2px",
-                margin: "0 1px",
                 display: "inline-block",
             };
 
@@ -247,7 +242,7 @@ const CodeWithMapping: React.FC<CodeWithMappingProps> = ({
 
     if (!showLineNumbers) {
         return (
-            <pre className="whitespace-pre-wrap text-xs text-gray-800 font-mono text-left leading-6 m-0">
+            <pre className="whitespace-pre-wrap text-xs text-gray-800 font-mono text-left m-0" style={{ lineHeight: '1.25rem' }}>
                 {renderHighlightedCode()}
             </pre>
         );
@@ -263,8 +258,8 @@ const CodeWithMapping: React.FC<CodeWithMappingProps> = ({
                 {lines.map((_, index) => (
                     <div
                         key={index}
-                        className="text-xs text-gray-500 text-right pr-2 leading-6 h-6"
-                        style={{ lineHeight: '1.5rem' }}
+                        className="text-xs text-gray-500 text-right pr-2 h-5"
+                        style={{ lineHeight: '1.25rem' }}
                     >
                         {index + 1}
                     </div>
@@ -273,7 +268,7 @@ const CodeWithMapping: React.FC<CodeWithMappingProps> = ({
 
             {/* Code content */}
             <div className="flex-1 overflow-x-auto pl-2">
-                <pre className="whitespace-pre-wrap text-xs text-gray-800 font-mono text-left leading-6 m-0">
+                <pre className="whitespace-pre-wrap text-xs text-gray-800 font-mono text-left m-0" style={{ lineHeight: '1.25rem' }}>
                     {renderHighlightedCode()}
                 </pre>
             </div>
