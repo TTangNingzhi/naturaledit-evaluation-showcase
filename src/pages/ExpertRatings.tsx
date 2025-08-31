@@ -3,7 +3,6 @@ import SubtaskDots from "../components/SubtaskDots";
 import SummaryWithMapping from "../components/SummaryWithMapping";
 import CodeWithMapping from "../components/CodeWithMapping";
 import CodeDiffBlock from "../components/CodeDiffBlock";
-import RatingsPanel from "../components/RatingsPanel";
 import SummaryDiff from "../components/SummaryDiff";
 import { useExpertTasks } from "../hooks/useExpertTasks";
 import type { Granularity, StructType } from "../types";
@@ -14,13 +13,13 @@ const ToggleGroup = ({
     value,
     onChange,
 }: {
-    label: string;
+    label?: string;
     options: { label: string; value: string }[];
     value: string;
     onChange: (v: string) => void;
 }) => (
     <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-500">{label}</span>
+        {label && <span className="text-xs text-gray-500">{label}</span>}
         <div className="inline-flex rounded bg-gray-100 p-1">
             {options.map((opt) => {
                 const active = opt.value === value;
@@ -55,12 +54,10 @@ const ExpertRatings: React.FC = () => {
         summaryKey,
     } = useExpertTasks();
 
-    const [version, setVersion] = useState<"original" | "new">("original");
-    const [viewMode, setViewMode] = useState<"mappings" | "diff">("mappings");
+    const [mode, setMode] = useState<"original" | "diff" | "new">("original");
     const [activeMappingIndex, setActiveMappingIndex] = useState<number | null>(null);
 
-    // Reset mapping highlight when mode changes
-    useEffect(() => setActiveMappingIndex(null), [version, viewMode, currentIndex, summaryKey]);
+    useEffect(() => setActiveMappingIndex(null), [mode, currentIndex, summaryKey]);
 
     const task = tasks[currentIndex];
 
@@ -70,39 +67,21 @@ const ExpertRatings: React.FC = () => {
         return { id: task.id, filename, path: task.path };
     }, [task]);
 
-    const summaryPair = useMemo(() => {
-        if (!task) return null;
-        return {
-            original: task.old.summary,
-            current: version === "original" ? task.old.summary : task.new.summary,
-        };
-    }, [task, version]);
-
     const codeContext = useMemo(() => {
         if (!task) return { code: "", other: "" };
-        if (viewMode === "diff") {
+        if (mode === "diff") {
             return { code: task.old.context, other: task.new.context };
         }
-        return {
-            code: version === "original" ? task.old.context : task.new.context,
-            other: version === "original" ? task.new.context : task.old.context,
-        };
-    }, [task, version, viewMode]);
+        return mode === "original"
+            ? { code: task.old.context, other: task.new.context }
+            : { code: task.new.context, other: task.old.context };
+    }, [task, mode]);
 
     const mappingsDict = useMemo(() => {
         if (!task) return null;
-        return version === "original" ? task.old.mappings : task.new.mappings;
-    }, [task, version]);
-
-    const granularityOptions: { label: string; value: Granularity }[] = [
-        { label: "Low", value: "low" },
-        { label: "Medium", value: "medium" },
-        { label: "High", value: "high" },
-    ];
-    const structureOptions: { label: string; value: StructType }[] = [
-        { label: "Structured", value: "structured" },
-        { label: "Unstructured", value: "unstructured" },
-    ];
+        if (mode === "diff") return null;
+        return mode === "original" ? task.old.mappings : task.new.mappings;
+    }, [task, mode]);
 
     return (
         <div className="min-h-screen bg-gray-50 py-2">
@@ -119,22 +98,14 @@ const ExpertRatings: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-4">
                             <ToggleGroup
-                                label="Version"
+                                label="Mode"
                                 options={[
                                     { label: "Original", value: "original" },
+                                    { label: "Diff", value: "diff" },
                                     { label: "New", value: "new" },
                                 ]}
-                                value={version}
-                                onChange={(v) => setVersion(v as "original" | "new")}
-                            />
-                            <ToggleGroup
-                                label="View"
-                                options={[
-                                    { label: "Mappings", value: "mappings" },
-                                    { label: "Diff (code)", value: "diff" },
-                                ]}
-                                value={viewMode}
-                                onChange={(v) => setViewMode(v as "mappings" | "diff")}
+                                value={mode}
+                                onChange={(v) => setMode(v as "original" | "diff" | "new")}
                             />
                         </div>
                     </div>
@@ -148,20 +119,7 @@ const ExpertRatings: React.FC = () => {
                                 onSelect={(i) => setCurrentIndex(i)}
                             />
                         </div>
-                        <div className="flex items-center gap-4">
-                            <ToggleGroup
-                                label="Granularity"
-                                options={granularityOptions}
-                                value={granularity}
-                                onChange={(v) => setGranularity(v as Granularity)}
-                            />
-                            <ToggleGroup
-                                label="Structure"
-                                options={structureOptions}
-                                value={structure}
-                                onChange={(v) => setStructure(v as StructType)}
-                            />
-                        </div>
+                        {/* No standalone granularity/structure controls here */}
                     </div>
                 </div>
 
@@ -179,26 +137,58 @@ const ExpertRatings: React.FC = () => {
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-white rounded border border-gray-200 p-3">
-                                <div className="mb-2 text-sm font-semibold text-gray-700">
-                                    {viewMode === "diff"
-                                        ? "Summary (original → new) diff"
-                                        : `Summary (${version}) • ${granularity}/${structure}`}
+                                <div className="mb-2 flex items-center justify-between">
+                                    <div className="text-sm font-semibold text-gray-700">
+                                        {mode === "diff"
+                                            ? "Summary (original → new) diff"
+                                            : `Summary (${mode})`}
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <label className="flex items-center gap-2 text-gray-600 font-mono text-xs select-none">
+                                            <input
+                                                type="checkbox"
+                                                checked={structure === "structured"}
+                                                onChange={(e) => setStructure(e.target.checked ? "structured" : "unstructured")}
+                                                className="form-checkbox w-4 h-4"
+                                            />
+                                            Structured
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-gray-600 font-mono text-xs">
+                                                Granularity ({granularity.charAt(0).toUpperCase() + granularity.slice(1)})
+                                            </span>
+                                            <input
+                                                type="range"
+                                                min={0}
+                                                max={2}
+                                                step={1}
+                                                value={["low", "medium", "high"].indexOf(granularity)}
+                                                onChange={(e) =>
+                                                    setGranularity(
+                                                        (["low", "medium", "high"][Number(e.target.value)] as Granularity)
+                                                    )
+                                                }
+                                                className="w-12 accent-gray-400"
+                                                aria-label="Granularity"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                                {viewMode === "diff" ? (
+
+                                {mode === "diff" ? (
                                     <div className="text-sm font-mono whitespace-pre-wrap leading-6">
                                         <SummaryDiff
                                             original={task.old.summary}
                                             current={task.new.summary}
                                             granularity={granularity}
-                                            structure={structure}
+                                            structure={structure as StructType}
                                         />
                                     </div>
                                 ) : (
-                                    summaryPair &&
                                     mappingsDict && (
                                         <SummaryWithMapping
-                                            mode={version}
-                                            originalSummary={summaryPair.original}
+                                            mode={mode === "original" ? "original" : "new"}
+                                            originalSummary={task.old.summary}
                                             newSummary={task.new.summary}
                                             mappings={mappingsDict}
                                             summaryKey={summaryKey}
@@ -211,11 +201,9 @@ const ExpertRatings: React.FC = () => {
 
                             <div className="bg-white rounded border border-gray-200 p-3">
                                 <div className="mb-2 text-sm font-semibold text-gray-700">
-                                    {viewMode === "diff"
-                                        ? "Code (old ↔ new) diff"
-                                        : `Code (${version}) context`}
+                                    {mode === "diff" ? "Code (old ↔ new) diff" : `Code (${mode}) context`}
                                 </div>
-                                {viewMode === "diff" ? (
+                                {mode === "diff" ? (
                                     <CodeDiffBlock
                                         title="Code diff"
                                         oldValue={task.old.context}
@@ -234,8 +222,6 @@ const ExpertRatings: React.FC = () => {
                                 )}
                             </div>
                         </div>
-
-                        <RatingsPanel tasksCount={tasks.length} />
                     </>
                 )}
             </div>
