@@ -16,3 +16,7 @@ All raw data are stored as `.jsonl` files in the `public/data/` directory.
    ```bash
    npm run dev
    ```
+
+## Deployment
+
+This repository is automatically deployed by GitHub Actions.
